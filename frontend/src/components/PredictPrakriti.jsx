@@ -1,0 +1,312 @@
+import { useState } from "react";
+import "../style.css";
+
+const questions = [  
+  {
+    question: "What is your body frame?",
+    options: [
+      { text: "It's thin", dosha: "Vata" },
+      { text: "It's medium", dosha: "Pitta" },
+      { text: "It's heavy or well built", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Type of Hair",
+    options: [
+      { text: "Dry with split ends", dosha: "Vata" },
+      { text: "Normal, thin, more hair fall", dosha: "Pitta" },
+      { text: "Greasy, heavy", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Color of Hair",
+    options: [
+      { text: "Pale brown", dosha: "Vata" },
+      { text: "Red or brown", dosha: "Pitta" },
+      { text: "Jet black", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Skin",
+    options: [
+      { text: "Dry, rough", dosha: "Vata" },
+      { text: "Soft, sweating, acne prone", dosha: "Pitta" },
+      { text: "Moist, greasy", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Complexion",
+    options: [
+      { text: "Dark, blackish", dosha: "Vata" },
+      { text: "Pink to red", dosha: "Pitta" },
+      { text: "Glowing, fair", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Body Weight",
+    options: [
+      { text: "Low, difficult to gain weight", dosha: "Vata" },
+      { text: "Medium, easy to gain or lose", dosha: "Pitta" },
+      { text: "Overweight, difficult to lose", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Nails",
+    options: [
+      { text: "Blackish, small, brittle", dosha: "Vata" },
+      { text: "Reddish, small", dosha: "Pitta" },
+      { text: "Pinkish, big, smooth", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Size and color of teeth",
+    options: [
+      { text: "Irregular, blackish", dosha: "Vata" },
+      { text: "Medium sized, yellowish", dosha: "Pitta" },
+      { text: "Large, shining white", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Pace of performing work",
+    options: [
+      { text: "Fast, always in hurry", dosha: "Vata" },
+      { text: "Moderate, energetic", dosha: "Pitta" },
+      { text: "Slow, steady", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Mental activity",
+    options: [
+      { text: "Quick, restless", dosha: "Vata" },
+      { text: "Smart intellect, aggressive", dosha: "Pitta" },
+      { text: "Calm, stable", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Memory",
+    options: [
+      { text: "Poor short-term memory", dosha: "Vata" },
+      { text: "Good memory", dosha: "Pitta" },
+      { text: "Excellent long-term memory", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Grasping power",
+    options: [
+      { text: "Quick but forgets quickly", dosha: "Vata" },
+      { text: "Quick and complete grasp", dosha: "Pitta" },
+      { text: "Slow but retains longer", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Sleep pattern",
+    options: [
+      { text: "Interrupted, light sleep", dosha: "Vata" },
+      { text: "Moderate sleep", dosha: "Pitta" },
+      { text: "Deep, long sleep", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Intolerance to weather",
+    options: [
+      { text: "Cold intolerance", dosha: "Vata" },
+      { text: "Heat intolerance", dosha: "Pitta" },
+      { text: "Cold & damp intolerance", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Reaction under stress",
+    options: [
+      { text: "Anxiety, worry", dosha: "Vata" },
+      { text: "Anger, aggression", dosha: "Pitta" },
+      { text: "Calm, withdrawn", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Mood",
+    options: [
+      { text: "Frequent mood swings", dosha: "Vata" },
+      { text: "Slow mood changes", dosha: "Pitta" },
+      { text: "Stable mood", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Eating habit",
+    options: [
+      { text: "Fast eating", dosha: "Vata" },
+      { text: "Moderate speed", dosha: "Pitta" },
+      { text: "Slow chewing", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Hunger",
+    options: [
+      { text: "Irregular hunger", dosha: "Vata" },
+      { text: "Strong hunger pangs", dosha: "Pitta" },
+      { text: "Can skip meals easily", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Body temperature",
+    options: [
+      { text: "Low, cold hands & feet", dosha: "Vata" },
+      { text: "High body heat", dosha: "Pitta" },
+      { text: "Normal temperature", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Joints",
+    options: [
+      { text: "Weak, cracking sound", dosha: "Vata" },
+      { text: "Strong joints", dosha: "Pitta" },
+      { text: "Heavy weight bearing", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Nature",
+    options: [
+      { text: "Timid, jealous", dosha: "Vata" },
+      { text: "Fearless, egoistic", dosha: "Pitta" },
+      { text: "Forgiving, content", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Body energy",
+    options: [
+      { text: "Low energy by evening", dosha: "Vata" },
+      { text: "Moderate energy", dosha: "Pitta" },
+      { text: "High energy all day", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Eyeball movement",
+    options: [
+      { text: "Fast moving eyes", dosha: "Vata" },
+      { text: "Moderate movement", dosha: "Pitta" },
+      { text: "Steady eyes", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Quality of voice",
+    options: [
+      { text: "Rough, broken", dosha: "Vata" },
+      { text: "Fast, commanding", dosha: "Pitta" },
+      { text: "Soft, deep", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Dreams",
+    options: [
+      { text: "Flying, confusion", dosha: "Vata" },
+      { text: "Fire, violence", dosha: "Pitta" },
+      { text: "Water, gardens", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Social relations",
+    options: [
+      { text: "Prefers solitude", dosha: "Vata" },
+      { text: "Many friends", dosha: "Pitta" },
+      { text: "Long lasting relations", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Wealth handling",
+    options: [
+      { text: "Spends quickly", dosha: "Vata" },
+      { text: "Balanced spending", dosha: "Pitta" },
+      { text: "Prefers saving", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Bowel movement",
+    options: [
+      { text: "Dry, hard stools", dosha: "Vata" },
+      { text: "Loose stools", dosha: "Pitta" },
+      { text: "Heavy, sticky stools", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Walking pace",
+    options: [
+      { text: "Fast, long steps", dosha: "Vata" },
+      { text: "Steady pace", dosha: "Pitta" },
+      { text: "Slow, short steps", dosha: "Kapha" }
+    ]
+  },
+  {
+    question: "Communication style",
+    options: [
+      { text: "Fast, unclear", dosha: "Vata" },
+      { text: "Good speaker", dosha: "Pitta" },
+      { text: "Less but firm speech", dosha: "Kapha" }
+    ]
+  }
+];
+
+export default function PredictPrakriti() {
+  const [answers, setAnswers] = useState({});
+  const [result, setResult] = useState(null);
+
+  const handleSelect = (qIndex, dosha) => {
+    setAnswers({ ...answers, [qIndex]: dosha });
+  };
+
+  const calculatePrakriti = () => {
+    const counts = { Vata: 0, Pitta: 0, Kapha: 0 };
+
+    Object.values(answers).forEach(d => counts[d]++);
+
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+    const percentages = {
+      Vata: Math.round((counts.Vata / total) * 100),
+      Pitta: Math.round((counts.Pitta / total) * 100),
+      Kapha: Math.round((counts.Kapha / total) * 100)
+    };
+
+    const dominant = Object.keys(percentages).reduce((a, b) =>
+      percentages[a] > percentages[b] ? a : b
+    );
+
+    setResult({ percentages, dominant });
+  };
+
+  return (
+    <div className="prakriti-page">
+      <div className="prakriti-container">
+        <h1>Prakriti Assessment</h1>
+        <p>Answer honestly to discover your natural constitution 🌿</p>
+
+        {questions.map((q, index) => (
+          <div className="question-card" key={index}>
+            <h3>{index + 1}. {q.question}</h3>
+            {q.options.map((opt, i) => (
+              <label className="option" key={i}>
+                <input
+                  type="radio"
+                  name={`q-${index}`}
+                  onChange={() => handleSelect(index, opt.dosha)}
+                />
+                {opt.text}
+              </label>
+            ))}
+          </div>
+        ))}
+
+        <button className="submit-btn" onClick={calculatePrakriti}>
+          Submit Assessment
+        </button>
+
+        {result && (
+          <div className="result-box">
+            <p>🧘 <strong>Dominant Prakriti:</strong> {result.dominant}</p>
+            <p>Vata: {result.percentages.Vata}%</p>
+            <p>Pitta: {result.percentages.Pitta}%</p>
+            <p>Kapha: {result.percentages.Kapha}%</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
