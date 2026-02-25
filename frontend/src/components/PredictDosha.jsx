@@ -8,75 +8,94 @@ export default function PredictDosha() {
   const [step, setStep] = useState(1);
 
   const [form, setForm] = useState({
-    age: "",
-    gender: "",
-    diet: "",
-    season: "",
-    sleep: "",
-    stress: "",
-    symptoms: ""
+    Age: "",
+    Gender: "",
+    Prakriti: "Vata", // default (model requires it)
+    Symptoms: "",
+    "Stress Level": "",
+    "Sleep Pattern": "",
+    "Diet Type": "",
+    Season: "",
+    Climate: "Cold" // default
   });
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  // Detect dosha + save to DB + navigate
   const handleSubmit = async () => {
-    let detectedDosha = "Balanced";
-
-    if (form.sleep === "Poor") detectedDosha = "Vata";
-    if (form.stress === "High") detectedDosha = "Pitta";
-    if (form.diet === "Non-Vegetarian" && form.season === "Winter") detectedDosha = "Kapha";
-
     const token = localStorage.getItem("token");
 
     try {
+      // 🔥 Call ML backend route
+      const response = await axios.post(
+        "http://localhost:5000/api/ml/predict",
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      const data = response.data;
+
+      // Optional: Save assessment history
       await axios.post(
         "http://localhost:5000/api/dosha",
-        { result: detectedDosha, details: form },
+        { result: data.predicted_dosha, details: form },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      navigate("/result", { state: { result: detectedDosha, details: form } });
+      navigate("/result", { state: { result: data } });
 
     } catch (err) {
-      console.error(err);
-      alert(" Failed to save assessment. Check backend.");
+      console.error("Prediction Error:", err);
+      alert("ML prediction failed. Make sure Flask server is running.");
     }
   };
 
   return (
     <div className="home-container predict-container">
-      
+
       {/* NAVBAR */}
       <div className="home-navbar">
-        <div className="brand-mini"><div className="logo-circle">
+        <div className="brand-mini">
+          <div className="logo-circle">
             <img src="/images/logo.jpeg" alt="Ayur Logo" className="logo-img" />
-          </div> AyurSage</div>
+          </div>
+          AyurSage
+        </div>
 
         <div className="nav-menu">
           <button className="nav-pill active">Predict Dosha</button>
-          <button className="nav-pill" onClick={() => navigate("/dashboard")}>Dashboard</button>
+          <button className="nav-pill" onClick={() => navigate("/dashboard")}>
+            Dashboard
+          </button>
         </div>
 
-        <button 
+        <button
           className="logout-pill"
-          onClick={() => { localStorage.removeItem("token"); navigate("/"); }}
+          onClick={() => {
+            localStorage.removeItem("token");
+            navigate("/");
+          }}
         >
           Sign Out
         </button>
       </div>
 
-      {/* PAGE TITLE */}
       <h1 className="home-title">Dosha Assessment</h1>
-      <p className="home-sub">Complete this 3-step assessment to discover your Ayurvedic body type.</p>
+      <p className="home-sub">
+        Complete this 3-step assessment to discover your Ayurvedic body type.
+      </p>
 
-      {/* STEPS INDICATOR */}
+      {/* STEP INDICATOR */}
       <div className="step-container">
         {[1, 2, 3].map((num) => (
-          <div 
-            key={num} 
-            className={`step ${step === num ? "active" : ""}`} 
+          <div
+            key={num}
+            className={`step ${step === num ? "active" : ""}`}
             onClick={() => setStep(num)}
           >
             {num}
@@ -84,11 +103,10 @@ export default function PredictDosha() {
         ))}
       </div>
 
-      {/* FORM CARD CENTER */}
       <div className="assessment-center">
         <div className="assessment-card">
 
-          {/* -------- STEP 1 -------- */}
+          {/* STEP 1 */}
           {step === 1 && (
             <>
               <h3 className="form-title">👤 Personal Information</h3>
@@ -96,9 +114,10 @@ export default function PredictDosha() {
               <label>Age</label>
               <input
                 type="number"
-                placeholder="Enter your age"
-                value={form.age}
-                onChange={(e) => setForm({ ...form, age: e.target.value })}
+                value={form.Age}
+                onChange={(e) =>
+                  setForm({ ...form, Age: e.target.value })
+                }
               />
 
               <label>Gender</label>
@@ -106,15 +125,21 @@ export default function PredictDosha() {
                 {["Male", "Female", "Other"].map((g) => (
                   <div
                     key={g}
-                    className={`choice-btn ${form.gender === g ? "selected" : ""}`}
-                    onClick={() => setForm({ ...form, gender: g })}
+                    className={`choice-btn ${
+                      form.Gender === g ? "selected" : ""
+                    }`}
+                    onClick={() =>
+                      setForm({ ...form, Gender: g })
+                    }
                   >
                     {g}
                   </div>
                 ))}
               </div>
 
-              <button className="next-btn" onClick={nextStep}>Next →</button>
+              <button className="next-btn" onClick={nextStep}>
+                Next →
+              </button>
             </>
           )}
 
@@ -124,22 +149,26 @@ export default function PredictDosha() {
               <h3 className="form-title">🌿 Lifestyle Habits</h3>
 
               <label>Diet Type</label>
-              <select 
-                value={form.diet}
-                onChange={(e) => setForm({ ...form, diet: e.target.value })}
+              <select
+                value={form["Diet Type"]}
+                onChange={(e) =>
+                  setForm({ ...form, "Diet Type": e.target.value })
+                }
               >
-                <option value="">Select diet pattern</option>
+                <option value="">Select</option>
                 <option value="Vegetarian">Vegetarian</option>
                 <option value="Non-Vegetarian">Non-Vegetarian</option>
                 <option value="Vegan">Vegan</option>
               </select>
 
               <label>Season</label>
-              <select 
-                value={form.season}
-                onChange={(e) => setForm({ ...form, season: e.target.value })}
+              <select
+                value={form.Season}
+                onChange={(e) =>
+                  setForm({ ...form, Season: e.target.value })
+                }
               >
-                <option value="">Select season</option>
+                <option value="">Select</option>
                 <option value="Spring">Spring</option>
                 <option value="Summer">Summer</option>
                 <option value="Monsoon">Monsoon</option>
@@ -147,31 +176,39 @@ export default function PredictDosha() {
                 <option value="Winter">Winter</option>
               </select>
 
-              <label>Sleep Quality</label>
-              <select 
-                value={form.sleep}
-                onChange={(e) => setForm({ ...form, sleep: e.target.value })}
+              <label>Sleep Pattern</label>
+              <select
+                value={form["Sleep Pattern"]}
+                onChange={(e) =>
+                  setForm({ ...form, "Sleep Pattern": e.target.value })
+                }
               >
-                <option value="">Select sleep quality</option>
+                <option value="">Select</option>
                 <option value="Good">Good</option>
                 <option value="Average">Average</option>
-                <option value="Poor">Poor</option>
+                <option value="Insomnia">Insomnia</option>
               </select>
 
               <label>Stress Level</label>
-              <select 
-                value={form.stress}
-                onChange={(e) => setForm({ ...form, stress: e.target.value })}
+              <select
+                value={form["Stress Level"]}
+                onChange={(e) =>
+                  setForm({ ...form, "Stress Level": e.target.value })
+                }
               >
-                <option value="">Select stress level</option>
+                <option value="">Select</option>
                 <option value="Low">Low</option>
                 <option value="Moderate">Moderate</option>
                 <option value="High">High</option>
               </select>
 
               <div className="button-row">
-                <button className="back-btn" onClick={prevStep}>← Back</button>
-                <button className="next-btn" onClick={nextStep}>Next →</button>
+                <button className="back-btn" onClick={prevStep}>
+                  ← Back
+                </button>
+                <button className="next-btn" onClick={nextStep}>
+                  Next →
+                </button>
               </div>
             </>
           )}
@@ -182,14 +219,20 @@ export default function PredictDosha() {
               <h3 className="form-title">🩺 Current Symptoms</h3>
 
               <textarea
-                placeholder="Describe your current symptoms..."
-                value={form.symptoms}
-                onChange={(e) => setForm({ ...form, symptoms: e.target.value })}
-              ></textarea>
+                placeholder="Describe your symptoms..."
+                value={form.Symptoms}
+                onChange={(e) =>
+                  setForm({ ...form, Symptoms: e.target.value })
+                }
+              />
 
               <div className="button-row">
-                <button className="back-btn" onClick={prevStep}>← Back</button>
-                <button className="next-btn" onClick={handleSubmit}>Submit</button>
+                <button className="back-btn" onClick={prevStep}>
+                  ← Back
+                </button>
+                <button className="next-btn" onClick={handleSubmit}>
+                  Submit
+                </button>
               </div>
             </>
           )}
